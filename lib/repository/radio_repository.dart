@@ -29,6 +29,7 @@ class RadioRepository {
       if (radioProgram != null) radioPrograms.add(radioProgram);
     });
 
+    radioPrograms.sort((a, b) => b.dateTime.compareTo(a.dateTime));
     return new Future.value(radioPrograms);
   }
 
@@ -38,9 +39,10 @@ class RadioRepository {
 
     try {
       url = div.querySelector('div.playBtn > form').attributes['action'];
-      RegExp exp = new RegExp(
-          "^https://onsen-dl.sslcs.cdngc.net/radio/[a-z]+?([0-9]{6})[a-zA-Z0-9]+?\.mp[3|4]\$");
-      final match = exp.firstMatch(url);
+
+      RegExp exp = new RegExp("^([0-9]{6})[a-zA-Z0-9]+?\.mp[3|4]\$");
+      final match =
+          exp.firstMatch(url.substring(url.length - 14)); // 190909WE8s.mp3
       var date = match.group(1);
       date =
           "20${date.substring(0, 2)}/${date.substring(2, 4)}/${date.substring(4, 6)}";
