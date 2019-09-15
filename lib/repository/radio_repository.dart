@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:aniradime/model/radio.dart';
+import 'package:aniradime/model/radio_program.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
 class RadioRepository {
-  static Future<List<Radio>> load() async {
+  static Future<List<RadioProgram>> load() async {
     final baseUrl = 'http://www.onsen.ag/';
     final mobileUserAgent =
         'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1';
@@ -20,18 +20,19 @@ class RadioRepository {
     String responseBody = utf8.decode(response.bodyBytes); // latin-1 -> utf8
     final document = parse(responseBody);
 
-    List<Radio> radios = [];
+    List<RadioProgram> radioPrograms = [];
     document
         .querySelectorAll('div.programContsWrap div.programConts')
         .forEach((div) {
       // print(_parseRadio(div, baseUrl).toString());
-      radios.add(_parseRadio(div, baseUrl));
+      RadioProgram radioProgram = _parseRadio(div, baseUrl);
+      if (radioProgram != null) radioPrograms.add(radioProgram);
     });
 
-    return new Future.value(radios);
+    return new Future.value(radioPrograms);
   }
 
-  static Radio _parseRadio(Element div, String baseUrl) {
+  static RadioProgram _parseRadio(Element div, String baseUrl) {
     String url;
     DateTime dateTime;
 
@@ -48,7 +49,7 @@ class RadioRepository {
       return null;
     }
 
-    return new Radio(
+    return new RadioProgram(
         div.querySelector('div.programData > p.programTitle').text,
         div.querySelector('div.programData > p.programPersonality').text,
         url,
