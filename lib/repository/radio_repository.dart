@@ -8,7 +8,15 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
 class RadioRepository {
-  static Future<List<RadioProgram>> load() async {
+  static Future<List<RadioProgram>> load(String id) async {
+    switch (id) {
+      case 'onsen':
+      default:
+        return loadOnsen();
+    }
+  }
+
+  static Future<List<RadioProgram>> loadOnsen() async {
     final baseUrl = 'http://www.onsen.ag/';
     final mobileUserAgent =
         'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1';
@@ -25,7 +33,7 @@ class RadioRepository {
         .querySelectorAll('div.programContsWrap div.programConts')
         .forEach((div) {
       // print(_parseRadio(div, baseUrl).toString());
-      RadioProgram radioProgram = _parseRadio(div, baseUrl);
+      RadioProgram radioProgram = _parseOnsenRadioProgram(div, baseUrl);
       if (radioProgram != null) radioPrograms.add(radioProgram);
     });
 
@@ -33,7 +41,7 @@ class RadioRepository {
     return new Future.value(radioPrograms);
   }
 
-  static RadioProgram _parseRadio(Element div, String baseUrl) {
+  static RadioProgram _parseOnsenRadioProgram(Element div, String baseUrl) {
     String url;
     DateTime dateTime;
 

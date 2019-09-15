@@ -1,7 +1,6 @@
-import 'package:aniradime/model/radio_program.dart';
-import 'package:aniradime/repository/radio_repository.dart';
+import 'package:aniradime/model/tab_item.dart';
+import 'package:aniradime/ui/radio_program_list_page.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -9,54 +8,23 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<RadioProgram> _radioPrograms = new List<RadioProgram>();
-
-  @override
-  void initState() {
-    _refresh();
-  }
+  List<TabItem> _tabItems = TabItem.createTabItems();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: new AppBar(
-        title: new Text('aniradime'),
-      ),
-      body: RefreshIndicator(
-        child: ListView.builder(
-            itemBuilder: (context, index) {
-              RadioProgram radioProgram = _radioPrograms[index];
-              return Column(
-                children: <Widget>[
-                  new ListTile(
-                    contentPadding:
-                        EdgeInsets.symmetric(vertical: 4, horizontal: 12),
-                    trailing: Image.network(
-                      radioProgram.imageUrl,
-                      height: 56,
-                    ),
-                    title: Text(radioProgram.title),
-                    subtitle: Container(
-                      margin: EdgeInsets.only(top: 4),
-                      child: Text(radioProgram.formattedDateTime()),
-                    ),
-                    onTap: () => {launch(radioProgram.url)},
-                  ),
-                  new Divider(height: 1.0)
-                ],
-              );
-            },
-            itemCount: _radioPrograms.length),
-        onRefresh: _refresh,
+    return DefaultTabController(
+      length: _tabItems.length,
+      child: Scaffold(
+        appBar: AppBar(
+          bottom: TabBar(
+            tabs: _tabItems.map((item) => Tab(text: item.title)).toList(),
+          ),
+          title: Text('aniradime'),
+        ),
+        body: TabBarView(
+          children: _tabItems.map((item) => RadioProgramListPage(item.id)).toList(),
+        ),
       ),
     );
-  }
-
-  Future<void> _refresh() {
-    return RadioRepository.load().then((radioPrograms) => {
-          setState(() {
-            _radioPrograms = radioPrograms;
-          })
-        });
   }
 }
