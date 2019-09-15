@@ -36,7 +36,10 @@ class _HomePageState extends State<HomePage> {
                       height: 56,
                     ),
                     title: Text(radioProgram.title),
-                    subtitle: Text(radioProgram.description),
+                    subtitle: Container(
+                      margin: EdgeInsets.only(top: 4),
+                      child: Text(radioProgram.formattedDateTime()),
+                    ),
                     onTap: () => {launch(radioProgram.url)},
                   ),
                   new Divider(height: 1.0)
