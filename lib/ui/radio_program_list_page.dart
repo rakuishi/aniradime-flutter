@@ -3,6 +3,7 @@ import 'package:aniradime/model/radio_station.dart';
 import 'package:aniradime/repository/radio_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class RadioProgramListPage extends StatefulWidget {
@@ -36,7 +37,8 @@ class _RadioProgramListPage extends State<RadioProgramListPage>
                 _radioPrograms = radioPrograms;
               })
             })
-        .catchError((onError) => {print(onError.toString())});
+        .catchError(
+            (onError) => {Fluttertoast.showToast(msg: onError.toString())});
   }
 
   @override
