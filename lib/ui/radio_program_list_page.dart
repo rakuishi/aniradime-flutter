@@ -30,11 +30,13 @@ class _RadioProgramListPage extends State<RadioProgramListPage>
   bool get wantKeepAlive => true;
 
   Future<void> _refresh() {
-    return RadioRepository.load(widget.radioStation).then((radioPrograms) => {
-          setState(() {
-            _radioPrograms = radioPrograms;
-          })
-        });
+    return RadioRepository.load(widget.radioStation)
+        .then((radioPrograms) => {
+              setState(() {
+                _radioPrograms = radioPrograms;
+              })
+            })
+        .catchError((onError) => {print(onError.toString())});
   }
 
   @override
