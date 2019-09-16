@@ -2,26 +2,27 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:aniradime/model/radio_program.dart';
+import 'package:aniradime/model/radio_station.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
 class RadioRepository {
-  static Future<List<RadioProgram>> load(String id) async {
-    switch (id) {
+  static Future<List<RadioProgram>> load(RadioStation radioStation) async {
+    switch (radioStation.type) {
       case 'onsen':
       default:
-        return loadOnsen();
+        return loadOnsen(radioStation);
     }
   }
 
-  static Future<List<RadioProgram>> loadOnsen() async {
-    final baseUrl = 'http://www.onsen.ag/';
+  static Future<List<RadioProgram>> loadOnsen(RadioStation radioStation) async {
+    final baseUrl = radioStation.url;
     final mobileUserAgent =
         'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1';
     final response = await http.get(
-      baseUrl,
+      radioStation.source,
       headers: {'User-Agent': mobileUserAgent},
     );
 

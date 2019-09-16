@@ -1,13 +1,14 @@
 import 'package:aniradime/model/radio_program.dart';
+import 'package:aniradime/model/radio_station.dart';
 import 'package:aniradime/repository/radio_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class RadioProgramListPage extends StatefulWidget {
-  final String id;
+  final RadioStation radioStation;
 
-  RadioProgramListPage(this.id);
+  RadioProgramListPage(this.radioStation);
 
   @override
   State createState() => _RadioProgramListPage();
@@ -29,7 +30,7 @@ class _RadioProgramListPage extends State<RadioProgramListPage>
   bool get wantKeepAlive => true;
 
   Future<void> _refresh() {
-    return RadioRepository.load(widget.id).then((radioPrograms) => {
+    return RadioRepository.load(widget.radioStation).then((radioPrograms) => {
           setState(() {
             _radioPrograms = radioPrograms;
           })
