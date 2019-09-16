@@ -15,6 +15,16 @@ class RadioStation {
         'http://ch.nicovideo.jp/seaside-channel',
         'http://ch.nicovideo.jp/seaside-channel/video?rss=2.0',
         'chnicovideo'));
+    tabItems.add(RadioStation(
+        'セカンドショット',
+        'http://ch.nicovideo.jp/secondshot',
+        'http://ch.nicovideo.jp/secondshot/video?rss=2.0',
+        'chnicovideo'));
+    tabItems.add(RadioStation(
+        '超！アニメディア',
+        'http://ch.nicovideo.jp/animedia',
+        'http://ch.nicovideo.jp/animedia/video?rss=2.0',
+        'chnicovideo'));
     return tabItems;
   }
 }

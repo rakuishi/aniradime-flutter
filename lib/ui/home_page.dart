@@ -18,6 +18,7 @@ class _HomePageState extends State<HomePage> {
         appBar: AppBar(
           bottom: TabBar(
             tabs: _radioStations.map((item) => Tab(text: item.title)).toList(),
+            isScrollable: _radioStations.length > 3,
           ),
           title: Text('aniradime'),
         ),
