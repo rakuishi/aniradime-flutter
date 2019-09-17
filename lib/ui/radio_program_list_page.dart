@@ -20,6 +20,9 @@ class RadioProgramListPage extends StatefulWidget {
 class _RadioProgramListPage extends State<RadioProgramListPage>
     with AutomaticKeepAliveClientMixin<RadioProgramListPage> {
   List<RadioProgram> _radioPrograms = new List<RadioProgram>();
+  bool _isRefreshing = false;
+
+  bool _showProgress() => _isRefreshing && _radioPrograms.length == 0;
 
   @override
   void initState() {
@@ -31,42 +34,84 @@ class _RadioProgramListPage extends State<RadioProgramListPage>
   bool get wantKeepAlive => true;
 
   Future<void> _refresh() {
-    return RadioRepository.load(widget.radioStation)
-        .then((radioPrograms) => {
-              setState(() {
-                _radioPrograms = radioPrograms;
-              })
-            })
-        .catchError(
-            (onError) => {Fluttertoast.showToast(msg: onError.toString())});
+    _isRefreshing = true;
+    return RadioRepository.load(widget.radioStation).then((radioPrograms) {
+      _isRefreshing = false;
+      setState(() {
+        _radioPrograms = radioPrograms;
+      });
+    }).catchError((onError) {
+      _isRefreshing = false;
+      Fluttertoast.showToast(msg: onError.toString());
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-      child: ListView.builder(
-        itemBuilder: (context, index) => _buildListItem(_radioPrograms[index]),
-        itemCount: _radioPrograms.length,
-      ),
-      onRefresh: _refresh,
-    );
+    super.build(context);
+    if (_showProgress()) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    } else {
+      return RefreshIndicator(
+        child: ListView.builder(
+          itemBuilder: (context, index) =>
+              _buildListItem(_radioPrograms[index]),
+          itemCount: _radioPrograms.length,
+        ),
+        onRefresh: _refresh,
+      );
+    }
   }
 
   Widget _buildListItem(RadioProgram radioProgram) {
-    return Column(
-      children: <Widget>[
-        new ListTile(
-          contentPadding: EdgeInsets.symmetric(vertical: 4, horizontal: 12),
-          trailing: Image.network(radioProgram.imageUrl, height: 56),
-          title: Text(radioProgram.title),
-          subtitle: Container(
-            margin: EdgeInsets.only(top: 4),
-            child: Text(radioProgram.formattedDateTime()),
+    return InkWell(
+      child: Column(
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: Column(
+                    children: <Widget>[
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          radioProgram.title,
+                          style: Theme.of(context).primaryTextTheme.subhead,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 4),
+                      ),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          radioProgram.formattedDateTime(),
+                          style: Theme.of(context).primaryTextTheme.body1,
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 16),
+                  child: Image.network(
+                    radioProgram.imageUrl,
+                    height: 68,
+                    width: 120,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ],
+            ),
           ),
-          onTap: () => {launch(radioProgram.url)},
-        ),
-        new Divider(height: 1.0)
-      ],
+          Divider(height: 1.0)
+        ],
+      ),
+      onTap: () => {launch(radioProgram.url)},
     );
   }
 }
