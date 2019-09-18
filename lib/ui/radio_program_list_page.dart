@@ -37,9 +37,11 @@ class _RadioProgramListPage extends State<RadioProgramListPage>
     _isRefreshing = true;
     return RadioRepository.load(widget.radioStation).then((radioPrograms) {
       _isRefreshing = false;
-      setState(() {
-        _radioPrograms = radioPrograms;
-      });
+      if (mounted) {
+        setState(() {
+          _radioPrograms = radioPrograms;
+        });
+      }
     }).catchError((onError) {
       _isRefreshing = false;
       Fluttertoast.showToast(msg: onError.toString());
