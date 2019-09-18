@@ -16,6 +16,8 @@ class RadioRepository {
         return _loadOnsen(radioStation);
       case 'chnicovideo':
         return _loadChNicoVideo(radioStation);
+      case 'hibiki':
+        return _loadHibiki(radioStation);
       default:
         throw Exception("${radioStation.title} is not supported.");
     }
@@ -100,6 +102,35 @@ class RadioRepository {
           dateTime));
     });
 
+    return Future.value(radioPrograms);
+  }
+
+  static Future<List<RadioProgram>> _loadHibiki(
+      RadioStation radioStation) async {
+    final response = await http.get(
+      radioStation.source,
+      headers: {'X-Requested-With': 'XMLHttpRequest'},
+    );
+    final result = json.decode(response.body) as List;
+    final List<RadioProgram> radioPrograms = [];
+
+    result.forEach((item) {
+      if (item['episode_updated_at'] == null) {
+        return;
+      }
+
+      final dateTime =
+          DateFormat('yyyy/MM/dd HH:mm:ss').parse(item['episode_updated_at']);
+
+      radioPrograms.add(RadioProgram(
+          item['name'],
+          item['description'],
+          "https://hibiki-radio.jp/description/${item['access_id']}/detail",
+          item['sp_image_url'],
+          dateTime));
+    });
+
+    radioPrograms.sort((a, b) => b.dateTime.compareTo(a.dateTime));
     return Future.value(radioPrograms);
   }
 }
